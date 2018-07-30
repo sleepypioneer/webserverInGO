@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        img {
+            width: 200px;
+            height: auto;
+        }
+        p {
+            font-size: larger;
+            font-weight: 600;
+            font-family: cursive;
+        }
+        #page-contents {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: auto;
+            margin-top: 80px;
+        }
+        .rainbow {
+            background-image: -webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );
+            background-image: gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );
+            color:transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div id="page-contents">
+        <p class="rainbow">It's nice to know that your favorite tree is a {{.FavoriteTree}}</p>
+        <img src="https://tse1.mm.bing.net/th?id=OIP.J8EvrYje-D0AtSLekhLM8gHaGH&pid=Api" alt="Gopher" />
+    </div>
+</body>
+</html>
