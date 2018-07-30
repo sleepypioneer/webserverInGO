@@ -30,26 +30,6 @@ type testFalseBody struct {
 }
 
 func Test_responseHandler_1(t *testing.T) {
-	// Test with POST method and from root with no body
-	req, err := http.NewRequest("POST", "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(responseHandler)
-
-	handler.ServeHTTP(rr, req)
-
-	// Check the status code is what we expect.
-	if status := rr.Code; status != http.StatusPreconditionFailed {
-		t.Errorf("handler returned wrong status code: got %v want %v",
-			status, http.StatusPreconditionFailed)
-	}
-}
-
-func Test_responseHandler_2(t *testing.T) {
 	// Test with POST method but not root URL
 	req, err := http.NewRequest("POST", "/smth", nil)
 	if err != nil {
@@ -69,7 +49,7 @@ func Test_responseHandler_2(t *testing.T) {
 	}
 }
 
-func Test_responseHandler_3(t *testing.T) {
+func Test_responseHandler_2(t *testing.T) {
 	// Test with POST method and correct body
 	tb := testBody{FavoriteTree: "Beech"}
 	b, err := json.Marshal(tb)
@@ -92,7 +72,7 @@ func Test_responseHandler_3(t *testing.T) {
 	}
 }
 
-func Test_responseHandler_4(t *testing.T) {
+func Test_responseHandler_3(t *testing.T) {
 	// Check response body with POST method and correct body
 	tb := testBody{FavoriteTree: "Oak"}
 	b, err := json.Marshal(tb)
@@ -116,7 +96,7 @@ func Test_responseHandler_4(t *testing.T) {
 	}
 }
 
-func Test_responseHandler_5(t *testing.T) {
+func Test_responseHandler_4(t *testing.T) {
 	// Check response body with POST method and incorrect body
 	tb := testFalseBody{Name: "Jessica"}
 	b, err := json.Marshal(tb)
@@ -137,5 +117,26 @@ func Test_responseHandler_5(t *testing.T) {
 	if len(rr.Body.String()) != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			len(rr.Body.String()), expected)
+	}
+}
+
+// Not currently working, goes into Panic dur to JSON stream reference
+func Test_responseHandler_5(t *testing.T) {
+	// Test with POST method and from root with no body
+	req, err := http.NewRequest("POST", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(responseHandler)
+
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code is what we expect.
+	if status := rr.Code; status != http.StatusPreconditionFailed {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusPreconditionFailed)
 	}
 }
