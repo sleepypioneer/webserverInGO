@@ -38,7 +38,7 @@ func Test_responseHandler_1(t *testing.T) {
 
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(responseHandler)
+	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 
 	handler.ServeHTTP(rr, req)
 
@@ -61,7 +61,7 @@ func Test_responseHandler_2(t *testing.T) {
 
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(responseHandler)
+	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 
 	handler.ServeHTTP(rr, req)
 
@@ -84,12 +84,12 @@ func Test_responseHandler_3(t *testing.T) {
 
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(responseHandler)
+	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 
 	handler.ServeHTTP(rr, req)
 
 	// Check the response body is what we expect by length.
-	expected := 1589
+	expected := 1573
 	if len(rr.Body.String()) != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			len(rr.Body.String()), expected)
@@ -108,7 +108,7 @@ func Test_responseHandler_4(t *testing.T) {
 
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(responseHandler)
+	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 
 	handler.ServeHTTP(rr, req)
 
@@ -130,7 +130,7 @@ func Test_responseHandler_5(t *testing.T) {
 
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(responseHandler)
+	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 
 	handler.ServeHTTP(rr, req)
 
