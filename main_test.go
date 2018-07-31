@@ -21,16 +21,18 @@ import (
 	"testing"
 )
 
-type testBody struct {
-	FavoriteTree string
-}
+type (
+	testBody struct {
+		FavoriteTree string
+	}
 
-type testFalseBody struct {
-	Name string
-}
+	testFalseBody struct {
+		Name string
+	}
+)
 
+// Test with POST method but not root URL
 func Test_responseHandler_1(t *testing.T) {
-	// Test with POST method but not root URL
 	req, err := http.NewRequest("POST", "/smth", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -39,7 +41,6 @@ func Test_responseHandler_1(t *testing.T) {
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
-
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.
@@ -49,8 +50,8 @@ func Test_responseHandler_1(t *testing.T) {
 	}
 }
 
+// Test with POST method and correct body
 func Test_responseHandler_2(t *testing.T) {
-	// Test with POST method and correct body
 	tb := testBody{FavoriteTree: "Beech"}
 	b, err := json.Marshal(tb)
 	r := bytes.NewReader(b)
@@ -62,7 +63,6 @@ func Test_responseHandler_2(t *testing.T) {
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
-
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.
@@ -72,8 +72,8 @@ func Test_responseHandler_2(t *testing.T) {
 	}
 }
 
+// Check response body with POST method and correct body
 func Test_responseHandler_3(t *testing.T) {
-	// Check response body with POST method and correct body
 	tb := testBody{FavoriteTree: "Oak"}
 	b, err := json.Marshal(tb)
 	r := bytes.NewReader(b)
@@ -85,19 +85,18 @@ func Test_responseHandler_3(t *testing.T) {
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
-
 	handler.ServeHTTP(rr, req)
 
 	// Check the response body is what we expect by length.
-	expected := 1573
+	expected := 1780
 	if len(rr.Body.String()) != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			len(rr.Body.String()), expected)
 	}
 }
 
+// Check response body with POST method and incorrect body
 func Test_responseHandler_4(t *testing.T) {
-	// Check response body with POST method and incorrect body
 	tb := testFalseBody{Name: "Jessica"}
 	b, err := json.Marshal(tb)
 	r := bytes.NewReader(b)
@@ -109,20 +108,19 @@ func Test_responseHandler_4(t *testing.T) {
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
-
 	handler.ServeHTTP(rr, req)
 
 	// Check the response body is what we expect by length.
-	expected := 1714
+	expected := 1780
 	if len(rr.Body.String()) != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			len(rr.Body.String()), expected)
 	}
 }
 
-// Not currently working, goes into Panic dur to JSON stream reference
+// Not currently working, goes into Panic due to JSON stream reference
+// Test with POST method and from root with no body
 func Test_responseHandler_5(t *testing.T) {
-	// Test with POST method and from root with no body
 	req, err := http.NewRequest("POST", "/", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -131,7 +129,6 @@ func Test_responseHandler_5(t *testing.T) {
 	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
-
 	handler.ServeHTTP(rr, req)
 
 	// Check the status code is what we expect.

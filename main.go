@@ -24,57 +24,62 @@ import (
 	"net/http"
 )
 
-type responseData struct {
-	FavoriteTree string
-}
-
+// Only allow requests from root
 func fromIndex(f http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" { // only allow requests from root
-			http.NotFound(w, r) // return 404 (not found)
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
 			return
 		}
 		f.ServeHTTP(w, r)
 	})
 }
 
+// Only allow POST method requests
 func postRequest(f http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" { //return 405 if not POST (Method not allowed)
-			http.Error(w, "Please only use Post requests", 405)
+		if r.Method != "POST" {
+			http.Error(w, "Please only use Post requests", http.StatusMethodNotAllowed)
 			return
 		}
 		f.ServeHTTP(w, r)
 	})
 }
 
+// Handle request and decode JSON data if found
 func requestHandler(w http.ResponseWriter, r *http.Request) {
-	var Data responseData
-	err := json.NewDecoder(r.Body).Decode(&Data)
+	d := make(map[string]interface{})
+	err := json.NewDecoder(r.Body).Decode(&d)
 	if err != nil {
 		if err == io.EOF {
-			http.Error(w, "Body of request cannot be empty, expecting Json data.", 412) //return 412 if body empty (Precondition Failed)
+			http.Error(w, "Body of request cannot be empty, expecting Json data.", http.StatusPreconditionFailed)
 			return
 		}
-		http.Error(w, err.Error(), 400) // return 400 (Bad Request) for other errors and error message
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	responseHandler(w, Data)
+	responseHandler(w, d)
 }
 
-func responseHandler(w http.ResponseWriter, data responseData) {
-	if len(data.FavoriteTree) > 0 {
-		t, err := template.ParseFiles("./templates/favoriteTree.html")
-		t.Execute(w, data)
+// Handle response depedning on if favoriteTree has been specified
+func responseHandler(w http.ResponseWriter, d map[string]interface{}) {
+	t, err := template.ParseFiles("./templates/favoriteTree.html")
+	nt, err := template.ParseFiles("./templates/noTree.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	v, ok := d["FavTree"]
+	if ok {
+		err := t.Execute(w, v)
 		if err != nil {
-			http.Error(w, err.Error(), 400) // return 400 (Bad Request) for other errors and error message
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 	} else {
-		t, err := template.ParseFiles("./templates/noTree.html")
-		t.Execute(w, nil)
+		err := nt.Execute(w, v)
 		if err != nil {
-			http.Error(w, err.Error(), 400) // return 400 (Bad Request) for other errors and error message
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 	}
@@ -88,7 +93,9 @@ func main() {
 	}
 }
 
-/* Curl commands to test code:
+/*
+
+Curl commands to test code:
 (For windows need to escape " and use only double quotes.)
 
 *Post request with correct body
