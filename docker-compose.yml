@@ -1,0 +1,10 @@
+web:
+  image: golang:latest
+  working_dir: /go/src/github.com/sleepypioneer/webserverInGo
+  volumes:
+    - .:/go/src/github.com/sleepypioneer/webserverInGo
+  environment:
+    - GOPATH=/go
+  command: go run webserver.go
+  ports:
+    - 8000:8000

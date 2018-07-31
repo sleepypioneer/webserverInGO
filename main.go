@@ -24,6 +24,14 @@ import (
 	"net/http"
 )
 
+// Log requests paths
+func logging(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.URL.Path)
+		f.ServeHTTP(w, r)
+	}
+}
+
 // Only allow requests from root
 func fromIndex(f http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +94,7 @@ func responseHandler(w http.ResponseWriter, d map[string]interface{}) {
 }
 
 func main() {
-	http.HandleFunc("/", fromIndex(postRequest(requestHandler))) // set router
+	http.HandleFunc("/", logging(fromIndex(postRequest(requestHandler))) // set router
 	err := http.ListenAndServe(":8000", nil)                     // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
