@@ -28,32 +28,44 @@ type responseData struct {
 	FavoriteTree string
 }
 
-func responseHandler(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" { // only allow requests from root
-		http.NotFound(w, r) // return 404 (not found)
-		return
-	}
+func fromIndex(f http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" { // only allow requests from root
+			http.NotFound(w, r) // return 404 (not found)
+			return
+		}
+		f.ServeHTTP(w, r)
+	})
+}
 
-	if r.Method != "POST" { //return 405 if not POST (Method not allowed)
-		http.Error(w, "Please only use Post requests", 405)
-		return
-	}
+func postRequest(f http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" { //return 405 if not POST (Method not allowed)
+			http.Error(w, "Please only use Post requests", 405)
+			return
+		}
+		f.ServeHTTP(w, r)
+	})
+}
 
-	var p responseData
-	err := json.NewDecoder(r.Body).Decode(&p)
-
-	switch {
-	case err == io.EOF:
-		http.Error(w, "Body of request cannot be empty, expecting Json data.", 412) //return 412 if body empty (Precondition Failed)
-		return
-	case err != nil:
+func requestHandler(w http.ResponseWriter, r *http.Request) {
+	var Data responseData
+	err := json.NewDecoder(r.Body).Decode(&Data)
+	if err != nil {
+		if err == io.EOF {
+			http.Error(w, "Body of request cannot be empty, expecting Json data.", 412) //return 412 if body empty (Precondition Failed)
+			return
+		}
 		http.Error(w, err.Error(), 400) // return 400 (Bad Request) for other errors and error message
 		return
 	}
+	responseHandler(w, Data)
+}
 
-	if len(p.FavoriteTree) > 0 {
+func responseHandler(w http.ResponseWriter, data responseData) {
+	if len(data.FavoriteTree) > 0 {
 		t, err := template.ParseFiles("./templates/favoriteTree.html")
-		t.Execute(w, p)
+		t.Execute(w, data)
 		if err != nil {
 			http.Error(w, err.Error(), 400) // return 400 (Bad Request) for other errors and error message
 			return
@@ -69,8 +81,8 @@ func responseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", responseHandler)    // set router
-	err := http.ListenAndServe(":8000", nil) // set listen port
+	http.HandleFunc("/", fromIndex(postRequest(requestHandler))) // set router
+	err := http.ListenAndServe(":8000", nil)                     // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -90,5 +102,8 @@ curl -s -S -XPOST -d"{\"name\":\"Beech\"}" http://localhost:8000
 
 *Get request
 curl http://localhost:8000
+
+*Post request not from root '/'
+curl -XPOST http://localhost:8000/smth
 
 */
