@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -31,6 +32,11 @@ type (
 	}
 )
 
+/* // Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+rr := httptest.NewRecorder()
+handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
+handler.ServeHTTP(rr, req) */
+
 // Test with POST method but not root URL
 func Test_responseHandler_1(t *testing.T) {
 	req, err := http.NewRequest("POST", "/smth", nil)
@@ -38,7 +44,6 @@ func Test_responseHandler_1(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 	handler.ServeHTTP(rr, req)
@@ -60,7 +65,6 @@ func Test_responseHandler_2(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 	handler.ServeHTTP(rr, req)
@@ -82,16 +86,15 @@ func Test_responseHandler_3(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 	handler.ServeHTTP(rr, req)
 
-	// Check the response body is what we expect by length.
-	expected := 1780
-	if len(rr.Body.String()) != expected {
+	// Check the response body is HTML
+	expected := "<!DOCTYPE html>"
+	if !strings.Contains(rr.Body.String(), "<!DOCTYPE html>") {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			len(rr.Body.String()), expected)
+			rr.Body.String(), expected)
 	}
 }
 
@@ -105,20 +108,18 @@ func Test_responseHandler_4(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 	handler.ServeHTTP(rr, req)
 
-	// Check the response body is what we expect by length.
-	expected := 1780
-	if len(rr.Body.String()) != expected {
+	// Check the returned document contains the expected string
+	expected := "Please tell me your favorite tree?"
+	if !strings.Contains(rr.Body.String(), "Please tell me your favorite tree?") {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			len(rr.Body.String()), expected)
 	}
 }
 
-// Not currently working, goes into Panic due to JSON stream reference
 // Test with POST method and from root with no body
 func Test_responseHandler_5(t *testing.T) {
 	req, err := http.NewRequest("POST", "/", nil)
@@ -126,7 +127,6 @@ func Test_responseHandler_5(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 	handler.ServeHTTP(rr, req)

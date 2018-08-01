@@ -24,10 +24,14 @@ import (
 	"net/http"
 )
 
-// Log requests paths
+// Log requests
 func logging(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.URL.Path)
+		log.Println("---New Request----")
+		log.Println("Path: ", r.URL.Path)
+		log.Println("Method: ", r.Method)
+		log.Println("Body: ", r.Body)
+		log.Println("------------------")
 		f.ServeHTTP(w, r)
 	}
 }
@@ -56,17 +60,21 @@ func postRequest(f http.HandlerFunc) http.HandlerFunc {
 
 // Handle request and decode JSON data if found
 func requestHandler(w http.ResponseWriter, r *http.Request) {
-	d := make(map[string]interface{})
-	err := json.NewDecoder(r.Body).Decode(&d)
-	if err != nil {
-		if err == io.EOF {
-			http.Error(w, "Body of request cannot be empty, expecting Json data.", http.StatusPreconditionFailed)
+	if r.Body != nil {
+		d := make(map[string]interface{})
+		err := json.NewDecoder(r.Body).Decode(&d)
+		if err != nil {
+			if err == io.EOF {
+				http.Error(w, "Body of request cannot be empty, expecting Json data.", http.StatusPreconditionFailed)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		responseHandler(w, d)
 		return
 	}
-	responseHandler(w, d)
+	http.Error(w, "Body of request cannot be empty, expecting Json data.", http.StatusPreconditionFailed)
 }
 
 // Handle response depedning on if favoriteTree has been specified
@@ -77,7 +85,7 @@ func responseHandler(w http.ResponseWriter, d map[string]interface{}) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	v, ok := d["FavTree"]
+	v, ok := d["favoriteTree"]
 	if ok {
 		err := t.Execute(w, v)
 		if err != nil {
@@ -94,8 +102,8 @@ func responseHandler(w http.ResponseWriter, d map[string]interface{}) {
 }
 
 func main() {
-	http.HandleFunc("/", logging(fromIndex(postRequest(requestHandler))) // set router
-	err := http.ListenAndServe(":8000", nil)                     // set listen port
+	http.HandleFunc("/", logging(fromIndex(postRequest(requestHandler)))) // set router
+	err := http.ListenAndServe(":8000", nil)                              // set listen port
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
