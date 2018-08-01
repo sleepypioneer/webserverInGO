@@ -32,10 +32,12 @@ type (
 	}
 )
 
-/* // Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
-rr := httptest.NewRecorder()
-handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
-handler.ServeHTTP(rr, req) */
+// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+func createResponseRecorder() (*httptest.ResponseRecorder, http.Handler) {
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
+	return rr, handler
+}
 
 // Test with POST method but not root URL
 func Test_responseHandler_1(t *testing.T) {
@@ -43,11 +45,8 @@ func Test_responseHandler_1(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
+	rr, handler := createResponseRecorder()
 	handler.ServeHTTP(rr, req)
-
 	// Check the status code is what we expect.
 	if status := rr.Code; status != http.StatusNotFound {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -64,11 +63,8 @@ func Test_responseHandler_2(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
+	rr, handler := createResponseRecorder()
 	handler.ServeHTTP(rr, req)
-
 	// Check the status code is what we expect.
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v",
@@ -85,14 +81,10 @@ func Test_responseHandler_3(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
+	rr, handler := createResponseRecorder()
 	handler.ServeHTTP(rr, req)
-
 	// Check the response body is HTML
-	expected := "<!DOCTYPE html>"
-	if !strings.Contains(rr.Body.String(), "<!DOCTYPE html>") {
+	if expected := "<!DOCTYPE html>"; !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
 	}
@@ -107,33 +99,42 @@ func Test_responseHandler_4(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
+	rr, handler := createResponseRecorder()
 	handler.ServeHTTP(rr, req)
-
 	// Check the returned document contains the expected string
-	expected := "Please tell me your favorite tree?"
-	if !strings.Contains(rr.Body.String(), "Please tell me your favorite tree?") {
+	if expected := "Please tell me your favorite tree?"; !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			len(rr.Body.String()), expected)
 	}
 }
 
-// Test with POST method and from root with no body
+// Check response body with POST method and empty body
 func Test_responseHandler_5(t *testing.T) {
-	req, err := http.NewRequest("POST", "/", nil)
+	body := bytes.NewReader([]byte{})
+	req, err := http.NewRequest("POST", "/", body)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
+	rr, handler := createResponseRecorder()
 	handler.ServeHTTP(rr, req)
-
 	// Check the status code is what we expect.
 	if status := rr.Code; status != http.StatusPreconditionFailed {
 		t.Errorf("handler returned wrong status code: got %v want %v",
 			status, http.StatusPreconditionFailed)
+	}
+}
+
+// Test with POST method and from root with nil body
+func Test_responseHandler_6(t *testing.T) {
+	req, err := http.NewRequest("POST", "/", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rr, handler := createResponseRecorder()
+	handler.ServeHTTP(rr, req)
+	// Check the status code is what we expect.
+	if status := rr.Code; status != http.StatusTeapot {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusTeapot)
 	}
 }

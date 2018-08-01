@@ -74,7 +74,7 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 		responseHandler(w, d)
 		return
 	}
-	http.Error(w, "Body of request cannot be empty, expecting Json data.", http.StatusPreconditionFailed)
+	http.Error(w, "Body of request cannot be nil, expecting Json data.", http.StatusTeapot)
 }
 
 // Handle response depedning on if favoriteTree has been specified
