@@ -16,12 +16,20 @@
         a:hover {
             opacity: 0.6;
         }
-        #page-contents {
+        .page-contents {
+            display: flex;
+            justify-content: center;
+            margin: auto;
+            margin-top: 80px;
+        }
+        .page-contents div {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: auto;
-            margin-top: 80px;
+            border: 2px #607d8b47 solid;
+            padding: 20px 40px;
+            border-radius: 5px;
+            box-shadow: #607d8bd9 0px 0 20px 4px;
         }
         .rainbow {
             background-image: -webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );
@@ -36,10 +44,12 @@
     </style>
 </head>
 <body>
-    <div id="page-contents">
-        <p class="rainbow">Please tell me your favorite tree?</p>
-        <img src="https://johnwoodcockillustration.files.wordpress.com/2012/08/hand-drawn-tree-converted2.jpg" alt="Tree" />
-        <a href="https://johnwoodcockillustration.wordpress.com/"><h6>Illustration by John Woodcock</h6></a>
+    <div class="page-contents">
+        <div>
+            <p class="rainbow">Please tell me your favorite tree?</p>
+            <img src="https://johnwoodcockillustration.files.wordpress.com/2012/08/hand-drawn-tree-converted2.jpg" alt="Tree" />
+            <a href="https://johnwoodcockillustration.wordpress.com/"><h6>Illustration by John Woodcock</h6></a>
+        </div>
     </div>
 </body>
 </html>

@@ -108,25 +108,3 @@ func main() {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
-
-/*
-
-Curl commands to test code:
-(For windows need to escape " and use only double quotes.)
-
-*Post request with correct body
-curl -s -S -XPOST -d"{\"favoriteTree\":\"Beech\"}" http://localhost:8000
-
-*Post request without body
-curl -s -S -XPOST http://localhost:8000
-
-*Post request with wrong body content
-curl -s -S -XPOST -d"{\"name\":\"Beech\"}" http://localhost:8000
-
-*Get request
-curl http://localhost:8000
-
-*Post request not from root '/'
-curl -XPOST http://localhost:8000/smth
-
-*/

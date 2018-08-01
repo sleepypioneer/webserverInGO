@@ -5,6 +5,6 @@ web:
     - .:/go/src/github.com/sleepypioneer/webserverInGo
   environment:
     - GOPATH=/go
-  command: go run webserver.go
+  command: go run main.go
   ports:
     - 8000:8000

@@ -1,16 +1,3 @@
-/*
-TEST CASES:
-* Non-POST requests return 405 (Method Not Allowed)
-* No JSON found in body returns a descriptive HTTP error code
-* Check objest return matches this {"favoriteTree": "baobab"}
-* Non-index URL: "/", returnsproper HTTP error code
-* Check that for a successful request, returns a properly encoded HTML document with the following content:
-	If "favoriteTree" was specified:
-		It's nice to know that your favorite tree is a <value of "favoriteTree" in the POST body>
-	if not specified:
-		Please tell me your favorite tree
-*/
-
 package main
 
 import (
@@ -22,24 +9,14 @@ import (
 	"testing"
 )
 
-type (
-	testBody struct {
-		FavoriteTree string
-	}
-
-	testFalseBody struct {
-		Name string
-	}
-)
-
-// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response.
+// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the test responses.
 func createResponseRecorder() (*httptest.ResponseRecorder, http.Handler) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(fromIndex(postRequest(requestHandler)))
 	return rr, handler
 }
 
-// Test with POST method but not root URL
+// Test with POST method but not from root URL
 func Test_responseHandler_1(t *testing.T) {
 	req, err := http.NewRequest("POST", "/smth", nil)
 	if err != nil {
@@ -56,8 +33,9 @@ func Test_responseHandler_1(t *testing.T) {
 
 // Test with POST method and correct body
 func Test_responseHandler_2(t *testing.T) {
-	tb := testBody{FavoriteTree: "Beech"}
-	b, err := json.Marshal(tb)
+	d := make(map[string]interface{})
+	d["favoriteTree"] = "Beech"
+	b, err := json.Marshal(d)
 	r := bytes.NewReader(b)
 	req, err := http.NewRequest("POST", "/", r)
 	if err != nil {
@@ -74,8 +52,9 @@ func Test_responseHandler_2(t *testing.T) {
 
 // Check response body with POST method and correct body
 func Test_responseHandler_3(t *testing.T) {
-	tb := testBody{FavoriteTree: "Oak"}
-	b, err := json.Marshal(tb)
+	d := make(map[string]interface{})
+	d["favoriteTree"] = "Beech"
+	b, err := json.Marshal(d)
 	r := bytes.NewReader(b)
 	req, err := http.NewRequest("POST", "/", r)
 	if err != nil {
@@ -88,12 +67,18 @@ func Test_responseHandler_3(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
 			rr.Body.String(), expected)
 	}
+	// Check the response body contains the given tree
+	if tree := "Beech"; !strings.Contains(rr.Body.String(), tree) {
+		t.Errorf("handler returned unexpected body: got %v want %v",
+			rr.Body.String(), tree)
+	}
 }
 
 // Check response body with POST method and incorrect body
 func Test_responseHandler_4(t *testing.T) {
-	tb := testFalseBody{Name: "Jessica"}
-	b, err := json.Marshal(tb)
+	d := make(map[string]interface{})
+	d["name"] = "Jessica"
+	b, err := json.Marshal(d)
 	r := bytes.NewReader(b)
 	req, err := http.NewRequest("POST", "/", r)
 	if err != nil {
@@ -104,7 +89,7 @@ func Test_responseHandler_4(t *testing.T) {
 	// Check the returned document contains the expected string
 	if expected := "Please tell me your favorite tree?"; !strings.Contains(rr.Body.String(), expected) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			len(rr.Body.String()), expected)
+			rr.Body.String(), expected)
 	}
 }
 
