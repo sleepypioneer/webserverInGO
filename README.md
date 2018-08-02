@@ -12,19 +12,34 @@ A simple webserver written in GO using only the standard library package:
 		It's nice to know that your favorite tree is a <value of "favoriteTree" in the POST body>
 	if not specified:
 		Please tell me your favorite tree
-    
-    
+		
+# :whale: Run with Docker
+```
+docker-compose up
+```
+
+# :tv: View with Postman
+https://www.getpostman.com/
+ 
 #  :memo: Curl commands to test code:
 (For windows need to escape " and use only double quotes.)
 
 - Post request with correct body
+```
 curl -s -S -XPOST -d"{\"favoriteTree\":\"Beech\"}" http://localhost:8000
+```
 
 - Post request without body
+```
 curl -s -S -XPOST http://localhost:8000
+```
 
 - Post request with wrong body content
+```
 curl -s -S -XPOST -d"{\"name\":\"Beech\"}" http://localhost:8000
+```
 
 - Get request
+```
 curl http://localhost:8000
+```
