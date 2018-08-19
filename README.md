@@ -1,3 +1,5 @@
+TEST
+
 # :computer: webserver in GO
 A simple webserver written in GO using only the standard library package:
 
