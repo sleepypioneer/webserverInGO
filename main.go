@@ -4,14 +4,10 @@ A simple web server, using only the standard library package of go:
 * Only accepts POST requests
 (405 Method Not Allowed : A request method is not supported for the requested resource; for example, a GET request on a form that requires data to be presented via POST, or a PUT request on a read-only resource.)
 * For any request, checks the body for a json encoded object and returns a descriptive HTTP error code if the body does not contain a valid json object.
-	We expect this object to look like this: {"favoriteTree": "baobab"}
+	We expect this object to look like this: {"name": "your name"}
 * Only accepts requests on the index URL: "/", and returns the proper HTTP error code if a different URL is requested.
 * Runs locally on port 8000
-* For a successful request, returns a properly encoded HTML document with the following content:
-	If "favoriteTree" was specified:
-		It's nice to know that your favorite tree is a <value of "favoriteTree" in the POST body>
-	if not specified:
-		Please tell me your favorite tree
+* For a successful request, returns a properly encoded HTML document
 */
 
 package main
@@ -79,13 +75,13 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 
 // Handle response depedning on if favoriteTree has been specified
 func responseHandler(w http.ResponseWriter, d map[string]interface{}) {
-	t, err := template.ParseFiles("./templates/favoriteTree.html")
-	nt, err := template.ParseFiles("./templates/noTree.html")
+	t, err := template.ParseFiles("./templates/withResponse.html")
+	nt, err := template.ParseFiles("./templates/noResponse.html")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	v, ok := d["favoriteTree"]
+	v, ok := d["name"]
 	if ok {
 		err := t.Execute(w, v)
 		if err != nil {

@@ -34,7 +34,7 @@ func Test_responseHandler_1(t *testing.T) {
 // Test with POST method and correct body
 func Test_responseHandler_2(t *testing.T) {
 	d := make(map[string]interface{})
-	d["favoriteTree"] = "Beech"
+	d["name"] = "Jessica"
 	b, err := json.Marshal(d)
 	r := bytes.NewReader(b)
 	req, err := http.NewRequest("POST", "/", r)
@@ -53,7 +53,7 @@ func Test_responseHandler_2(t *testing.T) {
 // Check response body with POST method and correct body
 func Test_responseHandler_3(t *testing.T) {
 	d := make(map[string]interface{})
-	d["favoriteTree"] = "Beech"
+	d["name"] = "Jessica"
 	b, err := json.Marshal(d)
 	r := bytes.NewReader(b)
 	req, err := http.NewRequest("POST", "/", r)
@@ -68,16 +68,16 @@ func Test_responseHandler_3(t *testing.T) {
 			rr.Body.String(), expected)
 	}
 	// Check the response body contains the given tree
-	if tree := "Beech"; !strings.Contains(rr.Body.String(), tree) {
+	if name := "Jessica"; !strings.Contains(rr.Body.String(), name) {
 		t.Errorf("handler returned unexpected body: got %v want %v",
-			rr.Body.String(), tree)
+			rr.Body.String(), name)
 	}
 }
 
 // Check response body with POST method and incorrect body
 func Test_responseHandler_4(t *testing.T) {
 	d := make(map[string]interface{})
-	d["name"] = "Jessica"
+	d["userName"] = "Jessica"
 	b, err := json.Marshal(d)
 	r := bytes.NewReader(b)
 	req, err := http.NewRequest("POST", "/", r)
