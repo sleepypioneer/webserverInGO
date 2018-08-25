@@ -13,20 +13,24 @@ A simple webserver written in GO using only the standard library package:
 	if not specified:
 		Please tell me your favorite tree
 		
-# :whale: Run with Docker  :whale:+
+# :whale: Run with Docker  :whale:
 
-You will need Docker & Docker-compose
-https://www.docker.com/get-started
+You will need Docker & Docker-compose : https://www.docker.com/get-started
 
 ```
 docker-compose up
 ```
 
 # :tv: View with Postman
+
+Postman is a great tool for viewing and testing your web app. You can download it and learn more here:
+
 https://www.getpostman.com/
  
 #  :memo: Curl commands to test code:
-(For windows need to escape " and use only double quotes.)
+
+Curl requests can put in the command line to test the web server.
+(For windows you need to escape " and use only double quotes. For Mac/ linux you can do without)
 
 - Post request with correct body
 ```
