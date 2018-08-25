@@ -13,7 +13,11 @@ A simple webserver written in GO using only the standard library package:
 	if not specified:
 		Please tell me your favorite tree
 		
-# :whale: Run with Docker
+# :whale: Run with Docker  :whale:+
+
+You will need Docker & Docker-compose
+https://www.docker.com/get-started
+
 ```
 docker-compose up
 ```
